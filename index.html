@@ -10,6 +10,8 @@
             background-color: #f4f7f6; 
             margin: 0; 
             padding: 20px; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         h1 { 
             text-align: center; 
@@ -51,14 +53,20 @@
             background-color: #e2e6ea;
         }
         .name { 
-            /* 【修正重點】：改用絕對像素並鎖死所有字距 */
             font-size: 22px; 
             font-weight: bold; 
             margin-bottom: 5px; 
             color: #333;
+            /* 進階文字渲染控制 */
+            text-rendering: geometricPrecision;
+            font-kerning: none;
             white-space: nowrap; 
-            letter-spacing: 0px; 
-            word-spacing: 0px;
+            display: flex;
+            justify-content: center;
+        }
+        /* 將每個字元變成獨立區塊，徹底杜絕幽靈空白 */
+        .name span {
+            display: inline-block;
         }
         .votes { 
             font-size: 2.5em; 
@@ -169,8 +177,8 @@
             "鄭彩琴", "梁翠英", "翁小華"
         ];
 
-        // 強制清除名單中所有可能夾帶的空白與隱形字元
-        allMembers = allMembers.map(name => name.replace(/\s+/g, ''));
+        // 清除所有隱形字元
+        allMembers = allMembers.map(name => name.replace(/[\s\u200B-\u200D\uFEFF]/g, ''));
 
         // 僅排除現任團長「蘇錦有」
         const candidates = allMembers.filter(name => name !== "蘇錦有");
@@ -189,8 +197,12 @@
                 const card = document.createElement('div');
                 card.className = 'candidate-card';
                 card.id = `card-${name}`; 
+                
+                // 【終極解法】：把名字切成單一字元，強迫各自獨立
+                const safeNameHTML = name.split('').map(char => `<span>${char}</span>`).join('');
+
                 card.innerHTML = `
-                    <div class="name">${name}</div>
+                    <div class="name">${safeNameHTML}</div>
                     <div class="votes" id="vote-${name}">${votes[name]}</div>
                     <div class="btn-group">
                         <button class="add-btn" onclick="changeVote('${name}', 1)">+1 票</button>
