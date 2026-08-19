@@ -55,7 +55,10 @@
             font-weight: bold; 
             margin-bottom: 5px; 
             color: #333;
+            /* 修正文字排版問題 */
             white-space: nowrap; 
+            letter-spacing: normal; 
+            word-spacing: normal;
         }
         .votes { 
             font-size: 2.5em; 
@@ -93,7 +96,6 @@
             text-align: center; 
             margin-top: 40px; 
         }
-        /* 控制區按鈕樣式 */
         .control-btn {
             width: auto; 
             padding: 10px 25px;
@@ -161,12 +163,15 @@
 
     <script>
         // 原始簽到表名單
-        const allMembers = [
+        let allMembers = [
             "李淑卿", "羅苑付", "黃鳳雀", "蘇錦有", "籃錦雀", 
             "陳秀鳳", "謝淑華", "施麗娟", "朱玉子", "張金治", 
             "蘇淨純", "林碧玉", "黃素玉", "潘素珍", "林純", 
             "鄭彩琴", "梁翠英", "翁小華"
         ];
+
+        // 【新增防護】：強制清除名單中所有可能夾帶的空白與隱形字元
+        allMembers = allMembers.map(name => name.replace(/\s+/g, ''));
 
         // 僅排除現任團長「蘇錦有」
         const candidates = allMembers.filter(name => name !== "蘇錦有");
