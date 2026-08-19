@@ -34,7 +34,7 @@
         }
         .candidates-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
             gap: 15px; 
             margin-top: 20px; 
         }
@@ -55,6 +55,7 @@
             font-weight: bold; 
             margin-bottom: 5px; 
             color: #333;
+            white-space: nowrap; 
         }
         .votes { 
             font-size: 2.5em; 
@@ -92,14 +93,26 @@
             text-align: center; 
             margin-top: 40px; 
         }
+        /* 控制區按鈕樣式 */
+        .control-btn {
+            width: auto; 
+            padding: 10px 25px;
+            margin: 0 10px;
+        }
+        .toggle-btn {
+            background: #28a745; 
+        }
+        .toggle-btn:hover { background: #218838; }
+        .toggle-btn.active {
+            background: #ffc107;
+            color: #333;
+        }
+        .toggle-btn.active:hover { background: #e0a800; }
         .reset-btn { 
             background: #dc3545; 
-            width: auto; 
-            padding: 10px 30px;
         }
-        .reset-btn:hover { 
-            background: #c82333; 
-        }
+        .reset-btn:hover { background: #c82333; }
+        
         .ranking { 
             margin-top: 40px; 
             padding: 25px; 
@@ -141,7 +154,8 @@
         </div>
 
         <div class="controls">
-            <button class="reset-btn" onclick="resetVotes()">🔄 全數重新計票</button>
+            <button class="control-btn toggle-btn" id="toggle-zero-btn" onclick="toggleZeroVotes()">👁️ 保留得票候選人</button>
+            <button class="control-btn reset-btn" onclick="resetVotes()">🔄 全數重新計票</button>
         </div>
     </div>
 
@@ -158,6 +172,7 @@
         const candidates = allMembers.filter(name => name !== "蘇錦有");
         
         let votes = {};
+        let isZeroHidden = false; // 追蹤是否要隱藏0票
 
         // 初始化所有候選人的票數為 0
         candidates.forEach(name => {
@@ -171,6 +186,7 @@
             candidates.forEach(name => {
                 const card = document.createElement('div');
                 card.className = 'candidate-card';
+                card.id = `card-${name}`; // 加上ID方便控制顯示/隱藏
                 card.innerHTML = `
                     <div class="name">${name}</div>
                     <div class="votes" id="vote-${name}">${votes[name]}</div>
@@ -182,6 +198,7 @@
                 grid.appendChild(card);
             });
             updateRanking();
+            updateGridVisibility(); // 確保重新渲染時套用隱藏狀態
         }
 
         // 變更票數 (增加或減少)
@@ -199,6 +216,7 @@
             }
             
             updateRanking();
+            updateGridVisibility(); // 如果在隱藏模式下減到0票，就讓他消失
         }
 
         // 更新排名區塊與幹部分配
@@ -237,6 +255,34 @@
                 rankingList.appendChild(li);
             });
         }
+        
+        // 切換隱藏/顯示 0 票候選人
+        function toggleZeroVotes() {
+            isZeroHidden = !isZeroHidden;
+            const btn = document.getElementById('toggle-zero-btn');
+            
+            if (isZeroHidden) {
+                btn.innerText = "👁️ 顯示所有候選人";
+                btn.classList.add('active');
+            } else {
+                btn.innerText = "👁️ 保留得票候選人";
+                btn.classList.remove('active');
+            }
+            
+            updateGridVisibility();
+        }
+
+        // 更新卡片顯示狀態
+        function updateGridVisibility() {
+            candidates.forEach(name => {
+                const card = document.getElementById(`card-${name}`);
+                if (isZeroHidden && votes[name] === 0) {
+                    card.style.display = 'none';
+                } else {
+                    card.style.display = 'block';
+                }
+            });
+        }
 
         // 重新計票機制
         function resetVotes() {
@@ -247,6 +293,7 @@
                     document.getElementById(`vote-${name}`).innerText = 0;
                 });
                 updateRanking();
+                updateGridVisibility();
             }
         }
 
