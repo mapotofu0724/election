@@ -139,15 +139,13 @@
             margin-bottom: 10px;
         }
         .rank-1 { color: #d35400; font-weight: bold; font-size: 1.2em; background-color: #ffe8cc; padding: 5px 15px; border-radius: 8px;}
-        .rank-2 { color: #2980b9; font-weight: bold; font-size: 1.1em; background-color: #d6eaf8; padding: 5px 15px; border-radius: 8px;}
-        .rank-3 { color: #27ae60; font-weight: bold; background-color: #d5f5e3; padding: 5px 15px; border-radius: 8px;}
         .title-badge { margin-left: 15px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>115年8月19日 志工會議計票板</h1>
-        <p class="note">⚠️ 選舉規則：依票數高低推選為團長一人，副團長兼組長一人，組長兩人。</p>
+        <p class="note">⚠️ 選舉規則：依票數最高者推選為團長一人。</p>
         
         <div class="candidates-grid" id="grid">
             <!-- 候選人會由 JavaScript 動態產生在這裡 -->
@@ -231,15 +229,10 @@
                 const li = document.createElement('li');
                 let titleHTML = "";
                 
+                // 現在只針對第一名標示團長頭銜
                 if (index === 0) {
                     li.className = "rank-1";
                     titleHTML = `<span class="title-badge">👑 團長</span>`;
-                } else if (index === 1) {
-                    li.className = "rank-2";
-                    titleHTML = `<span class="title-badge">⭐ 副團長兼組長</span>`;
-                } else if (index === 2 || index === 3) {
-                    li.className = "rank-3";
-                    titleHTML = `<span class="title-badge">🎖️ 組長</span>`;
                 }
 
                 li.innerHTML = `${name}：獲得 ${count} 票 ${titleHTML}`;
